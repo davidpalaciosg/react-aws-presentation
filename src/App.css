@@ -177,3 +177,9 @@ input[type="checkbox"]:checked::before {
   font-size: 16px;
   color: #45a049;
 }
+p{
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 1rem;
+}
