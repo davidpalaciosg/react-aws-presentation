@@ -1,52 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import xml2js from 'xml2js';
 import Edit from './Edit';
 
 //metodo GET
 function Table() {
   const [data, setData] = useState([]);
-  const [dataxml, setDataxml] = useState([]);
+  
+  const HOST_API = "https://gt7uk3458j.execute-api.us-east-2.amazonaws.com";
+  const endpoint = HOST_API + "/personas";
 
   useEffect(() => {
     //Informacion JSON
-    fetch('http://localhost:24/api/products')
-      .then(response => response.json())
-      .then(data => setData(data.products))
-      .catch(error => console.log(error));
+    renderPersons();
+}, );
 
+  const getPersons = async () => {
+    const response = await fetch(endpoint);
+    return await response.json();
+  };
 
-    /*fetch('http://localhost:24/api/products-xml')
-    .then(response => response.text())
-    .then(data => {
-      xml2js.parseString(data, (err, result) => {
-        if (err) {
-          console.log(err);
-        } else {
-          const products = result.products;
-          const xmlData = [];
-          for (let i = 0; i < products.id.length; i++) {
-            const product = {
-              id: products.id[i],
-              name: products.name[i],
-              color: products.color[i],
-              size: products.size[i],
-              brand: products.brand[i],
-              createdAt: products.createdAt[i],
-              updatedAt: products.updatedAt[i]
-            };
-            xmlData.push(product);
-          }
-          //setDataxml(xmlData);
-        }
-      });
-    })
-    .catch(error => console.log(error));*/
-  }, []);
+  const renderPersons = async () => {
+    const persons = await getPersons();
+    setData(persons);
+  };
 
   //Metodo DELETE
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:24/api/products/${id}`, {
+      const deleteEndpoint = endpoint + "/" + id;
+      const response = await fetch(deleteEndpoint, {
         method: "DELETE"
       });
       if (response.ok) {
@@ -60,11 +41,11 @@ function Table() {
   };
 
   //Metodo PUT
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedPerson, setSelectedPerson] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
   const handleEditClick = (id) => {
-    setSelectedProduct(data.find(item => item.id === id));
+    setSelectedPerson(data.find(item => item.id === id));
     setShowForm(true);
   };
   
@@ -75,12 +56,11 @@ function Table() {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Color</th>
-            <th>Size</th>
-            <th>Brand</th>
-            <th className='buttonColum'>Delete</th>
-            <th className='buttonColumEdit'>Modify</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Edad</th>
+            <th className='buttonColum'>Eliminar</th>
+            <th className='buttonColumEdit'>Modificar</th>
           </tr>
         </thead>
         <tbody>
@@ -88,41 +68,23 @@ function Table() {
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.name}</td>
-              <td>{item.color}</td>
-              <td>{item.size}</td>
-              <td>{item.brand}</td>
-              <td><button onClick={() => handleDelete(item.id)} className='deleteB'>Delete</button></td>
+              <td>{item.lastName}</td>
+              <td>{item.age}</td>
+              <td><button onClick={() => handleDelete(item.id)} className='deleteB'>Eliminar</button></td>
               <td>
                 {showForm ? (
-                  <button className='modify' disabled>Modify</button>
+                  <button className='modify' disabled>Modificar</button>
                 ) : (
-                  <button className='modify' onClick={() => handleEditClick(item.id)}>Modify</button>
+                  <button className='modify' onClick={() => handleEditClick(item.id)}>Modificar</button>
                 )}
               </td>
             </tr>
           ))}
-          {dataxml.map(item => (
-              <tr key={item.id}>
-                <td>{item.id}</td>
-                <td>{item.name}</td>
-                <td>{item.color}</td>
-                <td>{item.size}</td>
-                <td>{item.brand}</td>
-                <td><button onClick={() => handleDelete(item.id)} className='deleteB'>Delete</button></td>
-                <td>
-                  {showForm ? (
-                    <button className='modify' disabled>Modify</button>
-                  ) : (
-                    <button className='modify'>Modify</button>
-                  )}
-              </td>
-              </tr>
-            ))}
         </tbody>
       </table>
       {showForm && (
         <div className="buttonContainer">
-          <Edit product={selectedProduct}/>
+          <Edit person={selectedPerson}/>
         </div>
       )}
     </div>

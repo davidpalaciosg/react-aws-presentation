@@ -6,6 +6,10 @@ import Add from './components/Add';
 function App() {
   const [showForm, setShowForm] = useState(false);
 
+  useEffect(() => {
+    document.title = 'Personas App';
+  }, []);
+
   const handleClick = () => {
     setShowForm(true);
   };
@@ -13,10 +17,10 @@ function App() {
 
   return (
     <div>
-      <h1 className='title'>Products table</h1>
+      <h1 className='title'>Tabla personas</h1>
       <Table/>
         <div className="buttonContainer">
-          {!showForm && <button className='buttonAdd' onClick={handleClick}>Add</button>}
+          {!showForm && <button className='buttonAdd' onClick={handleClick}>Agregar persona</button>}
           {showForm && <Add />}
         </div>
     </div>
